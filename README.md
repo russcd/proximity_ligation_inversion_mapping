@@ -17,13 +17,17 @@ The primary use for this script is fine-mapping inversion breakpoints using prox
 python2 map_breakpoints.py --bp1 [int] --bp2 [int] --csv [gzipped csv file] --max_distance [int] --min_distance [int] --bootstrap [int]
 
 --bp1, the starting position for the optimization algorithm for the first breakpoint in basepairs 
+
 --bp2, the starting positionat as above, but for the second breakpoint
 
 In general, the starting position has not substantially affected breakpoint estimates when we run this program. However, it will generally be wise to vary the initial position provided in subsequent runs to make sure that optimized breakpoint position is estimated robustly. 
 
 --csv, the gzipped paired read mapping position (see below)
+
 --max_distance, the largest distance from the predicted starting breakpoints to consider, generally this parameter has little effect on the resulting breakpoint estimates, but it can sometimes speed up the program significantly
---min_distance, the minimum distance between two read pairs to consider, we have used 1,000 bp for this parameter in general
+
+--min_distance, the minimum distance between two read pairs to consider, we have used 1,000 bp for this parameter. This will tend to remove self-ligated read pairs and those for which there is no cut site.  
+
 --bootstrap, number of bootstraps to use to estimate breakpoint confidence intervals, the default is no bootstrapping. 
 
 # Inversion Detection:
