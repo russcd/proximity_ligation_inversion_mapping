@@ -14,7 +14,7 @@ Each can be installed using pip. E.g., "pip install numpy"
 # Recommended Usage:
 The primary use for this script is fine-mapping inversion breakpoints using proximity ligation sequencing data.
 
-python2 map_breakpoints.py --bp1 [int] --bp2 [int] --csv [gzipped csv file] --max_distance [int] --min_distance [int] --bootstrap [int]
+python2 map_breakpoints.py --bp1 [int] --bp2 [int] --csv [gzipped csv file] --max_distance [int] --min_distance [int] --bootstrap [int] --grid [int]
 
 --bp1, the starting position for the optimization algorithm for the first breakpoint in basepairs 
 
@@ -28,10 +28,16 @@ In general, the starting position has not substantially affected breakpoint esti
 
 --min_distance, the minimum distance between two read pairs to consider, we have used 1,000 bp for this parameter. This will tend to remove self-ligated read pairs and those for which there is no cut site.  
 
---bootstrap, number of bootstraps to use to estimate breakpoint confidence intervals, the default is no bootstrapping. 
+--bootstrap, number of bootstraps to use to estimate breakpoint confidence intervals, the default is no bootstrapping.
+
+--grid, distance between grid points for a coarse grid search covering the entire chromosome. If run, this will also produce a starting point for fine-mapping via the programs default behavior and output this to standard error. 
 
 # Inversion Detection:
-We have found that this program can also be used for inversion breakpoint detection by simply running it across an entire chromosome (i.e. --max_distance should not bet set) and providing evenly spaced points as the intiial estimates. When no inversion is present, i.e., in a genome that is completely colinear with the refnerence, breakpoint estimates are unrealistically close together (less than 10 Kb), or span across the entire length of the chromosome. Visual inspect of the contact map associated with any predicted breakpoint is considered essential to evaluate any predictions. 
+We have found that this program can also be used for inversion breakpoint detection by simply running it across an entire chromosome as a coarse grid search. This may be necessary if it is not known whether an inversion is present in the sample. If run in grid mode, the program will produce for all pairs of points across the grid the total distance spanned by all read pairs in the CSV file assuming an inversions breakpoints map to the coordinates of the point, and the ratio of the total distance spanned relative to their mapping positions with no assumed inversion. In general, if there is no inversion there should be no decrease in the total distance spanned by read pairs and the ratio will always exceed one. Therefore, a ratio less than one might be evidence of an inversion, and the minimum ratio across the grid can be used as a starting point for fine-mapping the breakpoint positions. However, in practice, many other features of the genome, e.g. translocations or missassemblies, might also result in false positives. We therefore caution that the results of this detection method should be interrogated graphically if possible. 
+
+To run a grid search, and example command line that includes points spaced every 250Kb is:
+
+python2 map_breakpoints.py --csv [CSV_FILE] --grid 250000 > [OUTPUT_GRID_fILE] 2> [SUGGESTED OPTIMIZATION STARTING POINT]
 
 # Recommended Preparation of Input Data:
 Generally, proximity ligated DNA is fragmented using a restriction enzyme and then end-repaired and blunt-end ligated. Therefore, we expect junctions between ligated DNA molecules to be demarcated with two tandem copies of the recognition sequence. Other approaches are possible so it is important to understand the specifics of each method. In the utility scripts, users will find a short perl script that will simply truncate all reads to the first tandem copy of the recognition sequence in our study, Mbol.
