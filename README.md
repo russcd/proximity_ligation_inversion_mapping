@@ -39,6 +39,8 @@ To run a grid search, and example command line that includes points spaced every
 
 python2 map_breakpoints.py --csv [CSV_FILE] --grid 250000 > [OUTPUT_GRID_fILE] 2> [SUGGESTED OPTIMIZATION STARTING POINT]
 
+Please be aware that if grid points are spaced very densly (e.g. every 10 Kb), this may take a very long time to run. 
+
 # Recommended Preparation of Input Data:
 Generally, proximity ligated DNA is fragmented using a restriction enzyme and then end-repaired and blunt-end ligated. Therefore, we expect junctions between ligated DNA molecules to be demarcated with two tandem copies of the recognition sequence. Other approaches are possible so it is important to understand the specifics of each method. In the utility scripts, users will find a short perl script that will simply truncate all reads to the first tandem copy of the recognition sequence in our study, Mbol.
 
