@@ -46,6 +46,6 @@ Generally, proximity ligated DNA is fragmented using a restriction enzyme and th
 
 Once reads have been processed to remove junctions, map them to the appropriate reference genome using the default bwa mem alignment function. Remove PCR duplicates and from these, remove the subset of read pairs for which one or both do not map above a specified mapping quality threshhold and those for which read pairs map to different chromosomes. Finally, from the resulting bam file, extract the mapping coordinates for each read using cut and compress with gzip. E.g.,
 
-samtools view BAMFILE | awk '$9 > 0' | cut -f3,4,9 | gzip - > inputfile.txt.gz 
+samtools view BAMFILE | awk '$9 > 0' | cut -f3,4,8 | gzip - > inputfile.txt.gz 
 
 
