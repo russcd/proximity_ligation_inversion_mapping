@@ -128,7 +128,8 @@ if args.bootstrap > 0 :
 	boot2.sort()
 
 	### print output
-	print "Boostrapped Confidence Intervals:\t", numpy.percentile(boot1, [2.5, 97.5]), "\t", numpy.percentile(boot2,[2.5,97.5])
+	print "95% Confidence Interval for Lower Breakpoint:\t", numpy.percentile(boot1, [2.5, 97.5]), "\n"
+	print "95% Confidence Interval for Upper Breakpoint:\t", numpy.percentile(boot2,[2.5,97.5]), "\n"
 
 ### grid search if requested
 if args.grid > 0 :
