@@ -20,10 +20,11 @@ required.add_argument('--csv', type=str, required=True, help='Read Pair Coordina
 optional = parser.add_argument_group('optional arguments')
 optional.add_argument('--bp1', type=int, default = 0, help='Breakpoint One [int]')
 optional.add_argument('--bp2', type=int, default = 0, help='Breakpoint Two [int]')
-optional.add_argument('--max_distance', type=int, default = 5e12, help='Maximum Distance To Breakpoint [int]' )
-optional.add_argument('--min_distance', type=int, default = 0, help='Minimum Distance Between Links [int]' )
-optional.add_argument('--bootstrap', type=int, default = 0, help='Number of Bootstraps [int]' )
-optional.add_argument('--grid', type=int, default = 0, help='Distance between Gridpoints [int]' )
+optional.add_argument('--max_distance', type=int, default = 5e12, help='Maximum Distance To Breakpoint [int]')
+optional.add_argument('--min_distance', type=int, default = 0, help='Minimum Distance Between Links [int]')
+optional.add_argument('--bootstrap', type=int, default = 0, help='Number of Bootstraps [int]')
+optional.add_argument('--grid', type=int, default = 0, help='Distance between Gridpoints [int]')
+optional.add_argument('--log', type=int, default = 1, help='Use log scaled distances [0,false | 1,true]')
 
 ## parse
 args = parser.parse_args()
@@ -50,11 +51,20 @@ def compute_distance( breakpoint ) :
 
         ## now go through and update our lines and compute the distance for the points
         if ( ( p1[i] < pos1 and p2[i] > pos2 ) or ( pos1 < p1[i] < pos2 and pos1 < p2[i] < pos2 ) or ( p1[i] <= p2[i] < pos1 ) or ( p1[i] > pos2 and p2[i] > pos2 ) ) : 
-            dist += ( p2[i] - p1[i] )
+            if ( args.log == 0 ) :
+                dist += ( p2[i] - p1[i] )
+            else :
+                dist += numpy.log( p2[i] - p1[i] )
         elif ( p1[i] < pos1 and pos1 < p2[i] < pos2 ) :
-            dist += ( pos1 + ( pos2 - p2[i] ) - p1[i] )
+            if ( args.log == 0 ) :
+                dist += ( pos1 + ( pos2 - p2[i] ) - p1[i] )
+            else :
+                numpy.log( pos1 + ( pos2 - p2[i] ) - p1[i] )
         elif ( pos1 < p1[i] < pos2 and pos2 < p2[i] ) :
-            dist += ( p2[i] - ( pos2 - ( p1[i] - pos1 ) ) )
+            if ( args.log == 0 ) :
+                dist += ( p2[i] - ( pos2 - ( p1[i] - pos1 ) ) )
+            else :
+                dist += numpy.log( p2[i] - ( pos2 - ( p1[i] - pos1 ) ) )
 
     ### return the total distance spanned by the reads
     return dist
