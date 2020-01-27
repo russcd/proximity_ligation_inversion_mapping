@@ -24,7 +24,7 @@ optional.add_argument('--max_distance', type=int, default = 5e12, help='Maximum 
 optional.add_argument('--min_distance', type=int, default = 0, help='Minimum Distance Between Links [int]')
 optional.add_argument('--bootstrap', type=int, default = 0, help='Number of Bootstraps [int]')
 optional.add_argument('--grid', type=int, default = 0, help='Distance between Gridpoints [int]')
-optional.add_argument('--log', type=int, default = 1, help='Use log scaled distances [0,false | 1,true]')
+optional.add_argument('--log', type=int, default = 0, help='Use log scaled distances [0,false | 1,true]')
 
 ## parse
 args = parser.parse_args()
