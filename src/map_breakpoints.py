@@ -66,7 +66,7 @@ def compute_distance( breakpoint ) :
             else :
                 dist += numpy.log( p2[i] - ( pos2 - ( p1[i] - pos1 ) ) )
 
-    print pos1, pos2, dist
+#    print pos1, pos2, dist
 
     ### return the total distance spanned by the reads
     return dist
@@ -128,12 +128,16 @@ if args.bootstrap > 0 :
 			p1.append(p1_boot[draw])
 			p2.append(p2_boot[draw])
 
+		### start and stop
+                start = args.bp1 + random.randint( -50000, 50000 )
+                end = args.bp2 + random.randint( -50000, 50000 )
+
 		### now run optimization
-		estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':30,'maxfev':5000} )
+		estimate = minimize(compute_distance, [start, end], method="Nelder-Mead", options={'maxiter':50,'maxfev':5000} )
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
-##		print b, estimate.x[0], estimate.x[1]
+#		print b, estimate.x[0], estimate.x[1]
 
 	## sort each and output 95% CI position estimates
 	boot1.sort()
