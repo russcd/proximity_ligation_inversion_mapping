@@ -66,6 +66,8 @@ def compute_distance( breakpoint ) :
             else :
                 dist += numpy.log( p2[i] - ( pos2 - ( p1[i] - pos1 ) ) )
 
+    print pos1, pos2, dist
+
     ### return the total distance spanned by the reads
     return dist
 
@@ -96,7 +98,7 @@ with gzip.open( args.csv ) as tsv :
 if ( args.bootstrap == 0 and args.grid == 0 ) :
 
 	### estimate the inversion breakpoint position
-	estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':5000,'maxfev':5000,'ftol':100000} )
+	estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':30,'maxfev':5000,'ftol':10000000} )
 
 	### print the output of the point estimate
 	print "Estimated Breakpoint Positions:\t", estimate.x[0], "\t", estimate.x[1]
@@ -127,7 +129,7 @@ if args.bootstrap > 0 :
 			p2.append(p2_boot[draw])
 
 		### now run optimization
-		estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':5000,'maxfev':5000} )
+		estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':30,'maxfev':5000} )
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
