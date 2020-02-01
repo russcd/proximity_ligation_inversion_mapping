@@ -133,7 +133,7 @@ if args.bootstrap > 0 :
                 end = args.bp2 + random.randint( -5000, 5000 )
 
 		### now run optimization
-		estimate = minimize(compute_distance, [start, end], method="Nelder-Mead", options={'maxiter':500,'maxfev':5000} )
+		estimate = minimize(compute_distance, [start, end], method="Nelder-Mead", options={'maxiter':100,'maxfev':5000} )
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
