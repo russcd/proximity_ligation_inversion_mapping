@@ -98,7 +98,7 @@ with gzip.open( args.csv ) as tsv :
 if ( args.bootstrap == 0 and args.grid == 0 ) :
 
 	### estimate the inversion breakpoint position
-	estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':30,'maxfev':5000,'ftol':10000000} )
+	estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':5000,'maxfev':5000,'ftol':10000000} )
 
 	### print the output of the point estimate
 	print "Estimated Breakpoint Positions:\t", estimate.x[0], "\t", estimate.x[1]
@@ -129,15 +129,15 @@ if args.bootstrap > 0 :
 			p2.append(p2_boot[draw])
 
 		### start and stop
-                start = args.bp1 + random.randint( -50000, 50000 )
-                end = args.bp2 + random.randint( -50000, 50000 )
+                start = args.bp1 + random.randint( -5000, 5000 )
+                end = args.bp2 + random.randint( -5000, 5000 )
 
 		### now run optimization
-		estimate = minimize(compute_distance, [start, end], method="Nelder-Mead", options={'maxiter':50,'maxfev':5000} )
+		estimate = minimize(compute_distance, [start, end], method="Nelder-Mead", options={'maxiter':500,'maxfev':5000} )
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
-#		print b, estimate.x[0], estimate.x[1]
+		print b, estimate.x[0], estimate.x[1]
 
 	## sort each and output 95% CI position estimates
 	boot1.sort()
