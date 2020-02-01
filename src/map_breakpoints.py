@@ -20,8 +20,8 @@ required.add_argument('--csv', type=str, required=True, help='Read Pair Coordina
 optional = parser.add_argument_group('optional arguments')
 optional.add_argument('--bp1', type=int, default = 0, help='Breakpoint One [int]')
 optional.add_argument('--bp2', type=int, default = 0, help='Breakpoint Two [int]')
-optional.add_argument('--max_distance', type=int, default = 5e12, help='Maximum Distance To Breakpoint [int]')
-optional.add_argument('--min_distance', type=int, default = 0, help='Minimum Distance Between Links [int]')
+optional.add_argument('--max_distance', type=int, default = 1e6, help='Maximum Distance To Breakpoint [int]')
+optional.add_argument('--min_distance', type=int, default = 1e3, help='Minimum Distance Between Links [int]')
 optional.add_argument('--bootstrap', type=int, default = 0, help='Number of Bootstraps [int]')
 optional.add_argument('--grid', type=int, default = 0, help='Distance between Gridpoints [int]')
 optional.add_argument('--log', type=int, default = 0, help='Use log scaled distances [0,false | 1,true]')
@@ -137,7 +137,7 @@ if args.bootstrap > 0 :
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
-		print b, estimate.x[0], estimate.x[1]
+#		print b, estimate.x[0], estimate.x[1]
 
 	## sort each and output 95% CI position estimates
 	boot1.sort()
