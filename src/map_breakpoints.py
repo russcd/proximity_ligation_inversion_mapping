@@ -36,6 +36,8 @@ if args.grid == 0 and ( args.bp1 == 0 or args.bp2 == 0 ) :
 ### data objects to store read positions
 p1 = []
 p2 = []
+p1_min = []
+p2_min = []
 
 ### compute distance function
 def compute_distance( breakpoint ) :
@@ -77,12 +79,14 @@ with gzip.open( args.csv ) as tsv :
 
     	### remove read pairs that are too close
         if ( abs( float(line[1]) - float(line[2]) ) < args.min_distance ):
+            p1_min.append( float( line[1] ) )
+            p2_min.append( float( line[2] ) )
             continue
 
         ### check to make sure we're close enough to consider the read
         if ( ( abs( float(line[1]) - args.bp1 ) < args.max_distance or abs( float(line[1]) - args.bp2 ) < args.max_distance ) and ( abs( float(line[2]) - args.bp1 ) < args.max_distance or abs( float(line[2]) - args.bp2 ) < args.max_distance ) ):
 
-        ### append read positions to list 
+        ### append read positions to list
             if ( float( line[1] ) < float( line[2] ) ) :
                 p1.append( float( line[1] ) )
                 p2.append( float( line[2] ) )
@@ -90,7 +94,7 @@ with gzip.open( args.csv ) as tsv :
                 ### or if alternative, add in other order
             elif ( float( line[1] ) > float( line[2] ) ) :
                 p1.append( float( line[2] ) )
-                p2.append( float( line[1] ) )              
+                p2.append( float( line[1] ) )
 
 ### now do the optimization if this is neither a bootstrap or grid search
 if ( args.bootstrap == 0 and args.grid == 0 ) :
@@ -127,19 +131,50 @@ if args.bootstrap > 0 :
 			p2.append(p2_boot[draw])
 
 		### now run optimization
-		estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':5000,'maxfev':5000} )
+		estimate = minimize(compute_distance, [args.bp1,args.bp2], method="Nelder-Mead", options={'maxiter':500,'maxfev':5000} )
 		boot1.append( int(estimate.x[0]) )
 		boot2.append( int(estimate.x[1]) )
 
-##		print b, estimate.x[0], estimate.x[1]
+		##print b, estimate.x[0], estimate.x[1]
 
 	## sort each and output 95% CI position estimates
 	boot1.sort()
 	boot2.sort()
 
+	## start with the 95% CI's and extend to the nearest concordant gene pair
+        ci = list( numpy.percentile(boot1,[2.5,97.5]) )
+	ci = ci + list( numpy.percentile(boot2,[2.5,97.5]) )
+
+	## find nearest concordant gene pair using all reads
+        p1_boot += p1_min
+        p2_boot += p2_min
+
+	### go through each ci and update
+        nearest = [-1000,-1000,-1000,-1000]
+        dist = [1000000000,1000000000,1000000000,100000000]
+
+	### lower left is 0, then right 1
+        for b in range( len(p1_boot)-1 ) :
+             if ( p1_boot[b] < p2_boot[b] < ci[0] ) :
+                 if ( ci[0] - p2_boot[b] < dist[0] ) :
+                     dist[0] = ci[0] - p2_boot[b]
+                     nearest[0] = p2_boot[b]
+             if ( ci[1] < p1_boot[b] < p2_boot[b] ) :
+                 if ( p1_boot[b] - ci[1] < dist[1] ) :
+                     dist[1] = p1_boot[b] - ci[1]
+                     nearest[1] = p1_boot[b]
+             if ( p1_boot[b] < p2_boot[b] < ci[2] ) :
+                 if ( ci[2] - p2_boot[b] < dist[2] ) :
+                     dist[2] = ci[2] - p2_boot[b]
+                     nearest[2] = p2_boot[b]
+             if ( ci[3] < p1_boot[b] < p2_boot[b] ) :
+                 if ( p1_boot[b] - ci[3] < dist[3] ) :
+                     dist[3] = p1_boot[b] - ci[3]
+                     nearest[3] = p1_boot[b]
+
 	### print output
-	print "95% Confidence Interval for Lower Breakpoint:\t", numpy.percentile(boot1, [2.5, 97.5]), "\n"
-	print "95% Confidence Interval for Upper Breakpoint:\t", numpy.percentile(boot2,[2.5,97.5]), "\n"
+	print "95% Confidence Interval for Lower Breakpoint:\t", nearest[0], nearest[1]
+	print "95% Confidence Interval for Upper Breakpoint:\t", nearest[2], nearest[3]
 
 ### grid search if requested
 if args.grid > 0 :
